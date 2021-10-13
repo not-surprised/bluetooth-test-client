@@ -22,6 +22,8 @@ async def print_services(ble_address: str):
     while device is None:
         device = await BleakScanner.find_device_by_address(ble_address, timeout=2.0)
 
+    print(f'Connecting to device {device.name}')
+
     async with BleakClient(device, timeout=100.0) as client:
         services = await client.get_services()
         print('Services:')
