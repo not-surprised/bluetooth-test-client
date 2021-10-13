@@ -15,7 +15,6 @@ SERVICE_UUID      = '00000000-b1b6-417b-af10-da8b3de984be'
 BRIGHTNESS_UUID   = '00000001-b1b6-417b-af10-da8b3de984be'
 VOLUME_UUID       = '00000002-b1b6-417b-af10-da8b3de984be'
 PAUSE_VOLUME_UUID = '10000001-b1b6-417b-af10-da8b3de984be'
-DESCRIPTOR_UUID   = '00002901-0000-1000-8000-00805f9b34fb'
 
 
 async def print_services(ble_address: str):
