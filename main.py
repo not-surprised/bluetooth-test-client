@@ -24,16 +24,18 @@ async def print_services(ble_address: str):
 
     async with BleakClient(device, timeout=100.0) as client:
         services = await client.get_services()
-        print("Services:")
+        print('Services:')
         for service in services:
             print(service)
         for service in services:
             if service.uuid == SERVICE_UUID:
-                for characteristic in service.characteristics:
+                for c in service.characteristics:
                     print()
-                    print(characteristic.uuid, characteristic.description)
-                    byte_array = await client.read_gatt_char(characteristic)
-                    print(byte_array.decode("ascii"))
+                    print(c.uuid, c.description)
+                    byte_array = await client.read_gatt_char(c)
+                    print(byte_array.decode('utf-8'))
+                    if c.uuid == PAUSE_VOLUME_UUID:
+                        await client.write_gatt_char(c, '1'.encode('utf-8'))
 
 
 if __name__ == '__main__':
