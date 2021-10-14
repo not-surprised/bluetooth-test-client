@@ -1,18 +1,15 @@
 import sys
 import math
 import asyncio
+import time
 
 from bleak import BleakClient, BleakScanner
 from bleak.backends.device import BLEDevice
+from bleak.backends.scanner import AdvertisementData
 from bleak.exc import BleakError
 
-ADDRESS = (
-    "B8:27:EB:24:A3:A8"
-)
 
-if len(sys.argv) == 2:
-    ADDRESS = sys.argv[1]
-
+MANUFACTURER_DATA = {0xffff: b'$tZuFTNvsLGt9U^gsCM!t8$@Fd6'}
 
 SERVICE_UUID      = '00000000-b1b6-417b-af10-da8b3de984be'
 BRIGHTNESS_UUID   = '00000001-b1b6-417b-af10-da8b3de984be'
@@ -30,14 +27,28 @@ def decode(byte_array: bytearray) -> str:
     return byte_array.decode('utf-8')
 
 
-async def find_device(ble_address: str) -> BLEDevice:
-    device = None
-    while device is None:
-        device = await BleakScanner.find_device_by_address(ble_address, timeout=0.5)
-    return device
+async def find_device() -> BLEDevice:
+    print('Discovering devices...')
+    async with BleakScanner() as scanner:
+
+        start_time = time.time()
+        future = asyncio.Future()
+        detected = set()
+
+        def detection_callback(device: BLEDevice, data: AdvertisementData):
+            if device.address not in detected:
+                detected.add(device.address)
+                print(' ', device)
+                if data.manufacturer_data == MANUFACTURER_DATA:
+                    time_used = time.time() - start_time
+                    print(f'Device found after {time_used:.2f} s')
+                    future.set_result(device)
+
+        scanner.register_detection_callback(detection_callback)
+        return await future
 
 
-async def find_device_debug(ble_address: str) -> BLEDevice:
+async def find_device_debug() -> BLEDevice:
     discovered = set()
     print('Discovering devices...')
     number_of_scans = 0
@@ -48,13 +59,18 @@ async def find_device_debug(ble_address: str) -> BLEDevice:
             if device.address not in discovered:
                 discovered.add(device.address)
                 print(' ', device)
-                if device.address == ble_address:
-                    print(f'Device found after {number_of_scans} scans')
-                    return device
+                try:
+                    if device.metadata['manufacturer_data'][65535] == MANUFACTURER_UNIQUE_IDENTIFIER:
+                        print(f'Device found after {number_of_scans} scans')
+                        return device
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
 
 
-async def test(ble_address: str):
-    device = await find_device_debug(ble_address)
+async def test():
+    device = await find_device()
 
     print(f'Connecting to device {device}')
 
@@ -90,4 +106,4 @@ async def test(ble_address: str):
 
 
 if __name__ == '__main__':
-    asyncio.run(test(ADDRESS))
+    asyncio.run(test())
