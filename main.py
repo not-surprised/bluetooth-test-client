@@ -1,4 +1,6 @@
 import sys
+import math
+import asyncio
 
 from bleak import BleakClient, BleakScanner
 from bleak.backends.device import BLEDevice
@@ -16,6 +18,8 @@ SERVICE_UUID      = '00000000-b1b6-417b-af10-da8b3de984be'
 BRIGHTNESS_UUID   = '00000001-b1b6-417b-af10-da8b3de984be'
 VOLUME_UUID       = '00000002-b1b6-417b-af10-da8b3de984be'
 PAUSE_VOLUME_UUID = '10000001-b1b6-417b-af10-da8b3de984be'
+
+LUX_TO_NITS = 1 / math.pi
 
 
 def encode(string: str) -> bytes:
@@ -49,7 +53,7 @@ async def find_device_debug(ble_address: str) -> BLEDevice:
                     return device
 
 
-async def print_services(ble_address: str):
+async def test(ble_address: str):
     device = await find_device_debug(ble_address)
 
     print(f'Connecting to device {device}')
@@ -86,7 +90,4 @@ async def print_services(ble_address: str):
 
 
 if __name__ == '__main__':
-    import asyncio
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(print_services(ADDRESS))
+    asyncio.run(test(ADDRESS))
