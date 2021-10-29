@@ -96,6 +96,26 @@ class NsBleClient:
         await self.client.write_gatt_char(self.pause_characteristic, self.encode('1'))
 
 
+class NsDummyClient:
+    import random
+
+    async def discover_and_connect(self):
+        await asyncio.sleep(5)
+
+    async def get_brightness(self):
+        await asyncio.sleep(0.2)
+        # returns brightness in lux
+        return random.randint(1, 20000)
+
+    async def get_volume(self):
+        await asyncio.sleep(0.2)
+        # unknown unit
+        return random.randint(0, 1)
+
+    async def pause_volume(self):
+        await asyncio.sleep(0.2)
+
+
 async def test():
     client = NsBleClient()
     await client.discover_and_connect()
