@@ -87,6 +87,14 @@ class NsBleClient:
         value = self.decode(raw)
         return value
 
+    async def get_volume(self):
+        raw = await self.client.read_gatt_char(self.volume_characteristic)
+        value = self.decode(raw)
+        return value
+
+    async def pause_volume(self):
+        await self.client.write_gatt_char(self.pause_characteristic, self.encode('1'))
+
 
 async def test():
     client = NsBleClient()
