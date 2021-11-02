@@ -105,12 +105,12 @@ class NsDummyClient:
     async def get_brightness(self):
         await asyncio.sleep(0.2)
         # returns brightness in lux
-        return random.randint(1, 20000)
+        return random.uniform(1, 20000)
 
     async def get_volume(self):
         await asyncio.sleep(0.2)
         # unknown unit
-        return random.randint(0, 1)
+        return random.uniform(0, 1)
 
     async def pause_volume(self):
         await asyncio.sleep(0.2)
