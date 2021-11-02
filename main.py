@@ -2,6 +2,7 @@ import sys
 import math
 import asyncio
 import time
+import random
 
 from bleak import BleakClient, BleakScanner
 from bleak.backends.device import BLEDevice
@@ -97,8 +98,6 @@ class NsBleClient:
 
 
 class NsDummyClient:
-    import random
-
     async def discover_and_connect(self):
         await asyncio.sleep(5)
 
@@ -108,16 +107,16 @@ class NsDummyClient:
         return random.uniform(1, 20000)
 
     async def get_volume(self):
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.1)
         # unknown unit
         return random.uniform(0, 1)
 
     async def pause_volume(self):
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.1)
 
 
 async def test():
-    client = NsBleClient()
+    client = NsDummyClient()
     await client.discover_and_connect()
     for i in range(10):
         print(await client.get_brightness())
