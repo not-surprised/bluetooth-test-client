@@ -86,12 +86,12 @@ class NsBleClient:
     async def get_brightness(self):
         raw = await self.client.read_gatt_char(self.brightness_characteristic)
         value = self.decode(raw)
-        return value
+        return float(value)
 
     async def get_volume(self):
         raw = await self.client.read_gatt_char(self.volume_characteristic)
         value = self.decode(raw)
-        return value
+        return float(value)
 
     async def pause_volume(self):
         await self.client.write_gatt_char(self.pause_characteristic, self.encode('1'))
@@ -116,7 +116,8 @@ class NsDummyClient:
 
 
 async def test():
-    client = NsDummyClient()
+    # client = NsDummyClient()
+    client = NsBleClient()
     await client.discover_and_connect()
     for i in range(10):
         print(await client.get_brightness())
